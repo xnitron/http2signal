@@ -7,6 +7,7 @@ const { parse } = require('url');
 
 const ROOT_DIR = process.cwd();
 const PORT = process.env.PORT || 42000;
+const HOST = process.env.HOST || 'localhost';
 const uploadDir = path.join(ROOT_DIR, process.env.UPLOAD_DIR || 'uploads');
 const scriptPath = path.join(ROOT_DIR, process.env.SCRIPT_PATH || 'signal-send.sh');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
@@ -64,7 +65,7 @@ const server = http.createServer((req, res) => {
     res.end('Not found');
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, HOST, () => {
     console.log(
         '\x1b[32m\x1b[1m📦 File server\x1b[0m ' +
         '\x1b[37mlistening on\x1b[0m ' +
