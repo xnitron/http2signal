@@ -1,13 +1,14 @@
+require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { execFile } = require('child_process');
 const { parse } = require('url');
 
-require('dotenv').config();
+const ROOT_DIR = process.cwd();
 const PORT = process.env.PORT || 42000;
-const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || 'uploads');
-const scriptPath = path.join(__dirname, process.env.SCRIPT_PATH || 'signal-send.sh');
+const uploadDir = path.join(ROOT_DIR, process.env.UPLOAD_DIR || 'uploads');
+const scriptPath = path.join(ROOT_DIR, process.env.SCRIPT_PATH || 'signal-send.sh');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 const handleUpload = (req, res, parsedUrl) => {
@@ -45,13 +46,17 @@ const handleUpload = (req, res, parsedUrl) => {
     });
 }
 
+const routes = {
+    'POST /upload': handleUpload,
+};
+
 const server = http.createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
     const routeKey = `${req.method} ${parsedUrl.pathname}`;
     const handler = routes[routeKey];
 
     if (handler) {
-        handleUpload(req, res, parsedUrl);
+        handler(req, res, parsedUrl);
         return
     }
 
